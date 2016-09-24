@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <mpi.h>
+
 #include "equations.c"
 
 #define PARAMETER_A 2
@@ -10,5 +15,7 @@
 #define PARAMETER_THETA 2
 
 int main(int argc, char *argv[]) {
+    
+    //MPI_Init(&argc, &argv);
     return 0;
 }
