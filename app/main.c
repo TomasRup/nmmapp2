@@ -1,7 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <mpi.h>
+#include "mpi.h"
 
 #include "equations.c"
 
@@ -15,7 +13,17 @@
 #define PARAMETER_THETA 2
 
 int main(int argc, char *argv[]) {
-    
-    //MPI_Init(&argc, &argv);
-    return 0;
+
+	MPI_Init(&argc, &argv);
+
+	int totalProcesses;
+	MPI_Comm_size(MPI_COMM_WORLD, &totalProcesses);
+
+	int currentProcess;
+	MPI_Comm_rank(MPI_COMM_WORLD, &currentProcess);
+
+	printf("current: %d out of %d", currentProcess, totalProcesses);
+
+	MPI_Finalize();
+	return 0;
 }
