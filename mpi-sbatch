@@ -5,4 +5,5 @@
 #SBATCH -C alpha
 #SBATCH -D /scratch/lustre/home/toru0015/nmmapp2/nmmapp2
 
+mpicc -std=c99 -o dist/app app/main.c
 mpirun dist/app
