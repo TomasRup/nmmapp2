@@ -5,4 +5,4 @@
 #SBATCH -C alpha
 #SBATCH -D /scratch/lustre/home/toru0015/nmmapp2/nmmapp2
 
-mpirun dist/app
+mpirun -n 8 dist/app
