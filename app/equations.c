@@ -2,9 +2,9 @@
 complex double uAccurate(
         const double x, 
         const double t) {
-            if (x < 0 || x>1) printf("\n%f\n", x);
+            
     assert(x >= 0);
-    // assert(x <= 1);
+    assert(x <= 1);
     
     return (2.0 + I * t) * cos(2.0 * M_PI * x);
 }

@@ -156,41 +156,77 @@ void assertTest3() {
 // Comparing u values to values calculated after Thomas algorithm
 void assertTest4() {
 
-    const double maxDifference = pow(10, -5);
+    const double maxDifference1 = 0.0;
+    const double maxDifference2 = 0.0;
 
-    // Mock configuration
-    struct configuration cfg;
-    cfg.N = 100;
-    cfg.h = 0.01;
-    cfg.Tau = 0.25;
-    cfg.T = 2;
-    cfg.alpha = 0.1;
-    cfg.delta = 0.00001;
+    // Mock configuration 1
+    struct configuration cfg1;
+    cfg1.N = 100;
+    cfg1.h = 0.01;
+    cfg1.Tau = 0.05;
+    cfg1.T = 2;
+    cfg1.alpha = 0.1;
+    cfg1.delta = 0.00001;
 
-    // Initializing results matrix
-    const int amountOfIterations = (int) (cfg.T / cfg.Tau);
-	complex double **finalResultsMatrix = malloc((amountOfIterations + 1) * sizeof(complex double*));
+    // Mock configuration 2 (with lesser h and Tau)
+    struct configuration cfg2;
+    cfg2.N = 200;
+    cfg2.h = 0.005;
+    cfg2.Tau = 0.05;
+    cfg2.T = 2;
+    cfg2.alpha = 0.1;
+    cfg2.delta = 0.00001;
 
-    for (int i = 0 ; i <= amountOfIterations ; i++) {
-		finalResultsMatrix[i] = malloc((cfg.N + 1) * sizeof (*finalResultsMatrix[i]));
+
+    // Initializing results matrixes
+    const int amountOfIterations1 = (int) (cfg1.T / cfg1.Tau);
+	complex double **finalResultsMatrix1 = malloc(amountOfIterations1 * sizeof(complex double*));
+    for (int i = 0 ; i < amountOfIterations1 ; i++) {
+        finalResultsMatrix1[i] = malloc((cfg1.N + 1) * sizeof (*finalResultsMatrix1[i]));
 	}
 
-    // Solving using the Algorithm
-    solve(finalResultsMatrix, cfg);
+    const int amountOfIterations2 = (int) (cfg2.T / cfg2.Tau);
+	complex double **finalResultsMatrix2 = malloc(amountOfIterations2 * sizeof(complex double*));
+    for (int i = 0 ; i < amountOfIterations2 ; i++) {
+        finalResultsMatrix2[i] = malloc((cfg2.N + 1) * sizeof (*finalResultsMatrix2[i]));
+	}
 
-    // Comparing results received by using algorithm to the actual ones
-    for (int i = 1 ; i <= amountOfIterations ; i++) {
-        for (int j = 0 ; j < cfg.N ; j++) {
-            // assert(cabs(finalResultsMatrix[i][j] - uAccurate(j * cfg.h, i * cfg.Tau)) <= maxDifference);
+    // Getting both solutions
+    solve(finalResultsMatrix1, cfg1);
+    solve(finalResultsMatrix2, cfg2);
+
+    // Initializing subtractions arrays
+    double maxSubtraction1 = 0.0;
+    double maxSubtraction2 = 0.0;
+
+    // Getting max delta for the first configuration
+    for (int i = 0 ; i < amountOfIterations1 ; i++) {
+        for (int j = 0 ; j <= cfg1.N ; j++) {
+            const double subtraction = finalResultsMatrix1[i][j] - uAccurate(j * cfg1.h, i * cfg1.Tau);
+            
+            if (subtraction > maxSubtraction1) {
+                maxSubtraction1 = subtraction;
+            }
         }
     }
 
+    // Getting max delta for the second configuration
+    for (int i = 0 ; i < amountOfIterations2 ; i++) {
+        for (int j = 0 ; j <= cfg2.N ; j++) {
+            const double subtraction = finalResultsMatrix2[i][j] - uAccurate(j * cfg2.h, i * cfg2.Tau);
+            
+            if (subtraction > maxSubtraction2) {
+                maxSubtraction2 = subtraction;
+            }
+        }
+    }
+
+    // Comparison
+    printf("\nTest4: comparing %f to %f", maxSubtraction1, maxSubtraction2);
+
+    assert(maxSubtraction1 > maxSubtraction2);
+
     // Finalizing
-    printf("\nTest4: passed");
-
-    for (int i = 0 ; i <= amountOfIterations ; i++) {
-		free(finalResultsMatrix[i]);
-	}
-
-    free(finalResultsMatrix);
+    free(finalResultsMatrix1);
+    free(finalResultsMatrix2);
 }
