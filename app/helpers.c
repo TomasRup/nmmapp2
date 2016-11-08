@@ -10,7 +10,7 @@ void printStats(
     const long difference = (appExecutionEnded.tv_sec - appExecutionStarted.tv_sec) * 1000.0f 
         + (appExecutionEnded.tv_usec - appExecutionStarted.tv_usec) / 1000.0f;
 
-    printf("Process %d/%d has completed in %ldms\n", currentProcess + 1, totalProcesses, difference);
+    printf("\nProcess %d/%d has completed in %ldms\n", currentProcess + 1, totalProcesses, difference);
 }
 
 // Returns maximum complex number

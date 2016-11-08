@@ -7,16 +7,25 @@
 #include <math.h>
 #include <string.h>
 #include <sys/time.h>
+#include <assert.h>
 
 #include "configuration.c"
 #include "helpers.c"
 #include "equations.c"
 #include "algorithms.c"
+#include "tests.c"
 
 int main(int argc, char *argv[]) {
 
+	// Initializing stats
     struct timeval appExecutionStarted;
 	gettimeofday(&appExecutionStarted, NULL);
+
+	// Run tests
+	assertTest1();
+	assertTest2();
+	assertTest3();
+	assertTest4();
 
 	// Multi core implementation parameters
 	MPI_Init(&argc, &argv);
@@ -31,17 +40,35 @@ int main(int argc, char *argv[]) {
 	struct configuration cfg;
 	cfg = getConfigurationBy(currentProcess);
 
-	// Executing calculations
-	solveNonLinearEquationsSystem(cfg.N, cfg.h, cfg.Tau, cfg.T, cfg.alpha, cfg.delta, currentProcess);
+	// Initializing results matrix
+	const int amountOfIterations = (int) (cfg.T / cfg.Tau);
+	complex double **finalResultsMatrix = malloc(amountOfIterations * sizeof(complex double*));
 
-	// Finalizing MPI process
+	for (int i = 0 ; i < amountOfIterations ; i++) {
+		finalResultsMatrix[i] = malloc((cfg.N + 1) * sizeof(*finalResultsMatrix[i]));
+	}
+
+	// Actually solving equation
+	solve(finalResultsMatrix, cfg);
+	
+	// Printint out the result
+	for (int i = 0 ; i < amountOfIterations ; i++) {
+		printListFileForSage(finalResultsMatrix[i], cfg.N, i, currentProcess);
+	}
+
+	// Finalizing
+	for (int i = 0 ; i < amountOfIterations ; i++) {
+		free(finalResultsMatrix[i]);
+	}
+	
+	free(finalResultsMatrix);
 	MPI_Finalize();
 
-	// Stats
+	// Printing stats
 	struct timeval appExecutionEnded;
 	gettimeofday(&appExecutionEnded, NULL);
-
 	printStats(appExecutionStarted, appExecutionEnded, currentProcess, totalProcesses);
 
+	// Success
 	return 0;
 }
