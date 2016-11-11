@@ -42,25 +42,25 @@ int main(int argc, char *argv[]) {
 
 	// Initializing results matrix
 	const int amountOfIterations = (int) (cfg.T / cfg.Tau);
-	complex double **finalResultsMatrix = malloc(amountOfIterations * sizeof(complex double*));
+	complex double **finalResultsMatrix = malloc((amountOfIterations + 1) * sizeof(complex double*));
 
-	for (int i = 0 ; i < amountOfIterations ; i++) {
+	for (int i = 0 ; i <= amountOfIterations ; i++) {
 		finalResultsMatrix[i] = malloc((cfg.N + 1) * sizeof(*finalResultsMatrix[i]));
 	}
 
 	// Actually solving equation
 	solve(finalResultsMatrix, cfg);
-	
+
 	// Printint out the result
 	for (int i = 0 ; i < amountOfIterations ; i++) {
 		printListFileForSage(finalResultsMatrix[i], cfg.N, i, currentProcess);
 	}
 
 	// Finalizing
-	for (int i = 0 ; i < amountOfIterations ; i++) {
+	for (int i = 0 ; i <= amountOfIterations ; i++) {
 		free(finalResultsMatrix[i]);
 	}
-	
+
 	free(finalResultsMatrix);
 	MPI_Finalize();
 

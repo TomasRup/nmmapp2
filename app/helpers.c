@@ -83,22 +83,18 @@ struct configuration getConfigurationBy(const int processId) {
                 break;
 
             case 1:
-                cfg.h = atof(configValue);
-                break;
-
-            case 2:
                 cfg.Tau = atof(configValue);
                 break;
 
-            case 3:
+            case 2:
                 cfg.T = atof(configValue);
                 break;
 
-            case 4:
+            case 3:
                 cfg.alpha = atof(configValue);
                 break;
 
-            case 5:
+            case 4:
                 cfg.delta = atof(configValue);
                 break;
         }
