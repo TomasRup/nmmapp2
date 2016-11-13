@@ -14,8 +14,8 @@ void printStats(
 }
 
 // Returns maximum complex number
-double max(double *array, const int size) {
-    double lastMaximum = array[0];
+long double max(long double *array, const int size) {
+    long double lastMaximum = array[0];
 
     for (int i = 1 ; i < size ; i++) {
         if (array[i] > lastMaximum) {
@@ -27,7 +27,7 @@ double max(double *array, const int size) {
 }
 
 // Prints a vector of complex numbers
-void printListFileForSage(const complex double *vector, const int size, const int iterationId, const int processId) {
+void printListFileForSage(const long double complex *vector, const int size, const int iterationId, const int processId) {
         char processIdString[sizeof(int)];
         sprintf(processIdString, "%d", processId);
         
@@ -41,7 +41,7 @@ void printListFileForSage(const complex double *vector, const int size, const in
         fprintf(file, "\n\nlist%d = [", iterationId);
         
         for (int i = 0 ; i <= size ; i++) {
-            fprintf(file, "%.8f", cabs(vector[i]));
+            fprintf(file, "%.8Lf", cabsl(vector[i]));
 
             if (i != size) {
                 fprintf(file, ", ");

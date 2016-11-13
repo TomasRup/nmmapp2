@@ -17,6 +17,15 @@
 
 int main(int argc, char *argv[]) {
 
+	// Multi core implementation parameters
+	MPI_Init(&argc, &argv);
+
+	int currentProcess;
+	MPI_Comm_rank(MPI_COMM_WORLD, &currentProcess);
+
+	int totalProcesses;
+	MPI_Comm_size(MPI_COMM_WORLD, &totalProcesses);
+
 	// Initializing stats
     struct timeval appExecutionStarted;
 	gettimeofday(&appExecutionStarted, NULL);
@@ -27,22 +36,13 @@ int main(int argc, char *argv[]) {
 	assertTest3();
 	assertTest4();
 
-	// Multi core implementation parameters
-	MPI_Init(&argc, &argv);
-
-	int currentProcess;
-	MPI_Comm_rank(MPI_COMM_WORLD, &currentProcess);
-
-	int totalProcesses;
-	MPI_Comm_size(MPI_COMM_WORLD, &totalProcesses);
-
 	// Reading configuration by processor id
 	struct configuration cfg;
 	cfg = getConfigurationBy(currentProcess);
 
 	// Initializing results matrix
 	const int amountOfIterations = (int) (cfg.T / cfg.Tau);
-	complex double **finalResultsMatrix = malloc((amountOfIterations + 1) * sizeof(complex double*));
+	long double complex **finalResultsMatrix = malloc((amountOfIterations + 1) * sizeof(long double complex*));
 
 	for (int i = 0 ; i <= amountOfIterations ; i++) {
 		finalResultsMatrix[i] = malloc((cfg.N + 1) * sizeof(*finalResultsMatrix[i]));
@@ -57,10 +57,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Finalizing
-	for (int i = 0 ; i <= amountOfIterations ; i++) {
-		free(finalResultsMatrix[i]);
-	}
-
 	free(finalResultsMatrix);
 	MPI_Finalize();
 

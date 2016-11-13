@@ -1,7 +1,7 @@
 // uAccurate(x, t) - some manually typed function
-complex double uAccurate(
-        const double x, 
-        const double t) {
+long double complex uAccurate(
+        const long double x, 
+        const long double t) {
             
     assert(x >= 0);
     assert(x <= 1);
@@ -10,9 +10,9 @@ complex double uAccurate(
 }
 
 // ∂u / ∂x
-complex double uDerivativeX(
-        const double x,
-        const double t) {
+long double complex uDerivativeX(
+        const long double x,
+        const long double t) {
 
     assert(x >= 0);
     assert(x <= 1);
@@ -21,9 +21,9 @@ complex double uDerivativeX(
 }
 
 // ∂u / ∂t
-complex double uDerivativeT(
-        const double x, 
-        const double t) {
+long double complex uDerivativeT(
+        const long double x, 
+        const long double t) {
 
     assert(x >= 0);
     assert(x <= 1);
@@ -32,9 +32,9 @@ complex double uDerivativeT(
 }
 
 // ∂^2u / ∂x^2
-complex double uSquareDerivativeXSquare(
-        const double x, 
-        const double t) {
+long double complex uSquareDerivativeXSquare(
+        const long double x, 
+        const long double t) {
 
     assert(x >= 0);
     assert(x <= 1);
@@ -43,15 +43,15 @@ complex double uSquareDerivativeXSquare(
 }
 
 // f(x, t) from Schrodinger's equation (C)
-complex double f(
-        const double x, 
-        const double t, 
-        const double alpha) {
+long double complex f(
+        const long double x, 
+        const long double t, 
+        const long double alpha) {
 
     assert(x >= 0);
     assert(x <= 1);
 
     return uDerivativeT(x, t)
         - (I * uSquareDerivativeXSquare(x, t))
-        - (alpha * pow(cabs(uAccurate(x, t)), 2) * uDerivativeX(x, t));
+        - (alpha * pow(cabsl(uAccurate(x, t)), 2) * uDerivativeX(x, t));
 }

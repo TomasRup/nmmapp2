@@ -2,34 +2,34 @@
 #define false 0
 
 // C
-complex double cFromC1(
-        const double h, 
-        const double Tau) {
+long double complex cFromC1(
+        const long double h, 
+        const long double Tau) {
             
     return 2 - ((I * 2.0 * pow(h, 2)) / Tau);
 }
 
 // Executing function F from C1 algorithm
 void initF(
-        complex double *result,
-        complex double *uPrevious,
-        complex double *uNextOld,
-        complex double *fNext,
-        complex double *fPrevious,
-        const double h,
-        const double alpha,
-        const double Tau,
+        long double complex *result,
+        long double complex *uPrevious,
+        long double complex *uNextOld,
+        long double complex *fNext,
+        long double complex *fPrevious,
+        const long double h,
+        const long double alpha,
+        const long double Tau,
         const int length) {
 
     for (int j = 1 ; j < length ; j++) {
         result[j] = (uPrevious[j + 1]
-            - 2 * uPrevious[j]
+            - 2.0 * uPrevious[j]
             + uPrevious[j - 1]
             - I
                 * pow(h, 2)
                 * alpha
                 * pow(
-                    cabs(
+                    cabsl(
                         (uNextOld[j] + uPrevious[j])
                             / 2.0),
                     2)
@@ -53,11 +53,11 @@ void initF(
 // |abc| = |d| 
 // |0ab|   |d|
 void thomasAlgorithm(
-        complex double *a,
-        complex double *b,
-        complex double *c,
-        complex double *d,
-        const int n) {
+        long double complex *a,
+        long double complex *b,
+        long double complex *c,
+        long double complex *d,
+        int n) {
 
     c[0] /= b[0];
     d[0] /= b[0];
@@ -77,19 +77,19 @@ void thomasAlgorithm(
 // Solving using Thomas Algorithm (Tridiagonal Matrix Algorithm). 
 // The supported form is x(j-1) - C * x(j) + x(j+1) = -F
 void solve(
-        complex double **finalResultsMatrix, 
+        long double complex **finalResultsMatrix, 
         struct configuration cfg) { 
     
     // Initializing constants
-    const double h = 1.0 / (double) cfg.N;
+    const long double h = 1.0 / (long double) cfg.N;
 
     // Initializing arrays
-    complex double *uPrevious = malloc((cfg.N + 1) * sizeof(complex double));
-    complex double *uNextNew = malloc((cfg.N + 1) * sizeof(complex double));
-    complex double *uNextOld = malloc((cfg.N + 1) * sizeof(complex double));
+    long double complex *uPrevious = malloc((cfg.N + 1) * sizeof(long double complex));
+    long double complex *uNextNew = malloc((cfg.N + 1) * sizeof(long double complex));
+    long double complex *uNextOld = malloc((cfg.N + 1) * sizeof(long double complex));
 
-    complex double *fNext = malloc((cfg.N + 1) * sizeof(complex double));
-    complex double *fPrevious = malloc((cfg.N + 1) * sizeof(complex double));
+    long double complex *fNext = malloc((cfg.N + 1) * sizeof(long double complex));
+    long double complex *fPrevious = malloc((cfg.N + 1) * sizeof(long double complex));
 
     // 'u' at time moment 0
     for (int i = 0 ; i <= cfg.N ; i++) {
@@ -97,10 +97,10 @@ void solve(
     }
 
     // 'u' next 'old' at time moment 0
-    memcpy(uNextOld, uPrevious, (cfg.N + 1) * sizeof(complex double));
+    memcpy(uNextOld, uPrevious, (cfg.N + 1) * sizeof(long double complex));
 
     // The first result array is the one from time 0
-    memcpy(finalResultsMatrix[0], uNextOld, (cfg.N + 1) * sizeof(complex double));
+    memcpy(finalResultsMatrix[0], uNextOld, (cfg.N + 1) * sizeof(long double complex));
 
     // 'f' at time moment 0
     for (int i = 0 ; i <= cfg.N ; i++) {
@@ -110,7 +110,7 @@ void solve(
     // Iterating over seconds starting at time moment 1 * Tau
     for (int timeIteration = 1 ; timeIteration <= (int) (cfg.T / cfg.Tau) ; timeIteration++) {
 
-        const double t = timeIteration * cfg.Tau;
+        const long double t = timeIteration * cfg.Tau;
 
         // f function values at times t and t + Tau
         for (int i = 0 ; i <= cfg.N ; i++) {
@@ -130,22 +130,22 @@ void solve(
             }
 
             // Initializing Matrix diagonal values
-            complex double *lowerDiagonal = malloc((cfg.N + 1) * sizeof(complex double));
+            long double complex *lowerDiagonal = malloc((cfg.N + 1) * sizeof(long double complex));
             lowerDiagonal[0] = 0;
             lowerDiagonal[cfg.N] = -1;
             for (int i = 1 ; i < cfg.N ; i++) {
                 lowerDiagonal[i] = 1;
             }
 
-            complex double *middleDiagonal = malloc((cfg.N + 1) * sizeof(complex double));
+            long double complex *middleDiagonal = malloc((cfg.N + 1) * sizeof(long double complex));
             middleDiagonal[0] = 1;
-            middleDiagonal[cfg.N] = 1;
-            const complex double C = cFromC1(h, cfg.Tau);
+            middleDiagonal[cfg.N] = 1; 
+            const long double complex C = cFromC1(h, cfg.Tau);
             for (int i = 1 ; i < cfg.N ; i++) {
                 middleDiagonal[i] = -C;
             }
 
-            complex double *upperDiagonal = malloc((cfg.N + 1) * sizeof(complex double));
+            long double complex *upperDiagonal = malloc((cfg.N + 1) * sizeof(long double complex));
             upperDiagonal[0] = -1;
             upperDiagonal[cfg.N] = 0;
             for (int i = 1 ; i < cfg.N ; i++) {
@@ -156,9 +156,9 @@ void solve(
             thomasAlgorithm(lowerDiagonal, middleDiagonal, upperDiagonal, uNextNew, cfg.N);
 
             // Checking max|uNextNew - uNextOld| < delta
-            double maxSubtraction = 0.0;
+            long double maxSubtraction = 0.0;
             for (int i = 0 ; i <= cfg.N ; i++) {
-                const double subtraction = cabs(uNextNew[i] - uNextOld[i]);
+                const long double subtraction = cabsl(uNextNew[i] - uNextOld[i]);
 
                 if (subtraction > maxSubtraction) {
                     maxSubtraction = subtraction;
@@ -170,35 +170,26 @@ void solve(
             }
 
             // The uNext new becomes old
-            memcpy(uNextOld, uNextNew, (cfg.N + 1) * sizeof(complex double));
+            memcpy(uNextOld, uNextNew, (cfg.N + 1) * sizeof(long double complex));
 
-            // Freeing memory
             free(lowerDiagonal);
             free(middleDiagonal);
             free(upperDiagonal);
         }
 
         // Adding result
-        memcpy(finalResultsMatrix[timeIteration], uNextNew, (cfg.N + 1) * sizeof(complex double));
+        memcpy(finalResultsMatrix[timeIteration], uNextNew, (cfg.N + 1) * sizeof(long double complex));
 
-        // Swapping current u values with new values
-        complex double *tempList = malloc((cfg.N + 1) * sizeof(complex double));
+        // Swapping previous u values with next new values
+        long double complex *tempList = malloc((cfg.N + 1) * sizeof(long double complex));
         
-        memcpy(tempList, uNextNew, (cfg.N + 1) * sizeof(complex double));
-        memcpy(uNextNew, uPrevious, (cfg.N + 1) * sizeof(complex double));
-        memcpy(uPrevious, tempList, (cfg.N + 1) * sizeof(complex double));
+        memcpy(tempList, uNextNew, (cfg.N + 1) * sizeof(long double complex));
+        memcpy(uNextNew, uPrevious, (cfg.N + 1) * sizeof(long double complex));
+        memcpy(uPrevious, tempList, (cfg.N + 1) * sizeof(long double complex));
         
         free(tempList);
 
         // Current 'f' becomes previous
-        memcpy(fPrevious, fNext, (cfg.N + 1) * sizeof(complex double));
+        memcpy(fPrevious, fNext, (cfg.N + 1) * sizeof(long double complex));
     }
-    
-    // Freeing memory
-    free(uNextNew);
-    free(uPrevious);
-    free(uNextOld);
-
-    free(fNext);
-    free(fPrevious);
 }
