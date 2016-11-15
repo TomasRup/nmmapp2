@@ -36,6 +36,8 @@ int main(int argc, char *argv[]) {
 	assertTest3();
 	assertTest4();
 
+	printf("\n\nTests have been completed, beginning initial execution...\n");
+
 	// Reading configuration by processor id
 	struct configuration cfg;
 	cfg = getConfigurationBy(currentProcess);

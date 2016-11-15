@@ -218,11 +218,11 @@ void assertTest4() {
 
     // Mock configuration 2
     struct configuration cfg2;
-    cfg2.N = cfg1.N * 10.0L;
-    cfg2.Tau = cfg1.Tau / 10.0L;
-    cfg2.T = 0.8;
-    cfg2.alpha = 0.23;
-    cfg2.delta = 1e-12;
+    cfg2.N = cfg1.N * 10.0L; // decreasing h 10 times
+    cfg2.Tau = cfg1.Tau / 10.0L; // decreasing Tau 10 times
+    cfg2.T = cfg1.T;
+    cfg2.alpha = cfg1.alpha;
+    cfg2.delta = cfg1.delta;
 
     // Evaluating proportion
     const long double proportion = maxDifference(cfg1) / maxDifference(cfg2);
