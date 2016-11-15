@@ -6,7 +6,7 @@ long double complex uAccurate(
     assert(x >= 0);
     assert(x <= 1);
     
-    return (2.0 + I * t) * cos(2.0 * M_PI * x);
+    return (2.0L + I * t) * cos(2.0L * M_PI * x);
 }
 
 // ∂u / ∂x
@@ -17,7 +17,7 @@ long double complex uDerivativeX(
     assert(x >= 0);
     assert(x <= 1);
 
-    return (-2.0) * M_PI * (2.0 + I * t) * sin(2.0 * M_PI * x);
+    return (-2.0L) * M_PI * (2.0L + I * t) * sin(2.0L * M_PI * x);
 }
 
 // ∂u / ∂t
@@ -28,7 +28,7 @@ long double complex uDerivativeT(
     assert(x >= 0);
     assert(x <= 1);
 
-    return I * cos(2.0 * M_PI * x);
+    return I * cos(2.0L * M_PI * x);
 }
 
 // ∂^2u / ∂x^2
@@ -39,7 +39,7 @@ long double complex uSquareDerivativeXSquare(
     assert(x >= 0);
     assert(x <= 1);
 
-    return (-4.0) * pow(M_PI, 2) * (2.0 + I * t) * cos(2.0 * M_PI * x);
+    return (-4.0L) * pow(M_PI, 2) * (2.0L + I * t) * cos(2.0L * M_PI * x);
 }
 
 // f(x, t) from Schrodinger's equation (C)

@@ -6,7 +6,7 @@ long double complex cFromC1(
         const long double h, 
         const long double Tau) {
             
-    return 2 - ((I * 2.0 * pow(h, 2)) / Tau);
+    return 2.0L - ((I * 2.0L * pow(h, 2)) / Tau);
 }
 
 // Executing function F from C1 algorithm
@@ -23,7 +23,7 @@ void initF(
 
     for (int j = 1 ; j < length ; j++) {
         result[j] = (uPrevious[j + 1]
-            - 2.0 * uPrevious[j]
+            - 2.0L * uPrevious[j]
             + uPrevious[j - 1]
             - I
                 * pow(h, 2)
@@ -31,17 +31,17 @@ void initF(
                 * pow(
                     cabsl(
                         (uNextOld[j] + uPrevious[j])
-                            / 2.0),
+                            / 2.0L),
                     2)
                 * (((uNextOld[j + 1] - uNextOld[j - 1]) 
-                        / (2 * h)) 
+                        / (2.0L * h)) 
                     + ((uPrevious[j + 1] - uPrevious[j - 1]) 
-                        / (2 * h)))
+                        / (2.0L * h)))
             - I
                 * pow(h, 2)
                 * (fNext[j] + fPrevious[j])
             - (uPrevious[j]
-                * ((I * 2 * pow(h, 2)) 
+                * ((I * 2.0L * pow(h, 2)) 
                     / Tau)));
     }
 
@@ -81,31 +81,30 @@ void solve(
         struct configuration cfg) { 
     
     // Initializing constants
-    const long double h = 1.0 / (long double) cfg.N;
-
-    // Initializing arrays
-    long double complex *uPrevious = malloc((cfg.N + 1) * sizeof(long double complex));
-    long double complex *uNextNew = malloc((cfg.N + 1) * sizeof(long double complex));
-    long double complex *uNextOld = malloc((cfg.N + 1) * sizeof(long double complex));
-
-    long double complex *fNext = malloc((cfg.N + 1) * sizeof(long double complex));
-    long double complex *fPrevious = malloc((cfg.N + 1) * sizeof(long double complex));
+    const long double h = 1.0L / (long double) cfg.N;    
 
     // 'u' at time moment 0
+    long double complex *uPrevious = malloc((cfg.N + 1) * sizeof(long double complex));
     for (int i = 0 ; i <= cfg.N ; i++) {
-        uPrevious[i] = uAccurate(i * h, 0);
+        uPrevious[i] = uAccurate(i * h, 0.0L);
     }
 
     // 'u' next 'old' at time moment 0
+    long double complex *uNextOld = malloc((cfg.N + 1) * sizeof(long double complex));
     memcpy(uNextOld, uPrevious, (cfg.N + 1) * sizeof(long double complex));
 
     // The first result array is the one from time 0
     memcpy(finalResultsMatrix[0], uNextOld, (cfg.N + 1) * sizeof(long double complex));
 
     // 'f' at time moment 0
+    long double complex *fPrevious = malloc((cfg.N + 1) * sizeof(long double complex));
     for (int i = 0 ; i <= cfg.N ; i++) {
-        fPrevious[i] = f(i * h, 0, cfg.alpha);
+        fPrevious[i] = f(i * h, 0.0L, cfg.alpha);
     }
+
+    // Arrays that values will be initialized within the loop
+    long double complex *uNextNew = malloc((cfg.N + 1) * sizeof(long double complex));
+    long double complex *fNext = malloc((cfg.N + 1) * sizeof(long double complex));
 
     // Iterating over seconds starting at time moment 1 * Tau
     for (int timeIteration = 1 ; timeIteration <= (int) (cfg.T / cfg.Tau) ; timeIteration++) {
@@ -131,25 +130,25 @@ void solve(
 
             // Initializing Matrix diagonal values
             long double complex *lowerDiagonal = malloc((cfg.N + 1) * sizeof(long double complex));
-            lowerDiagonal[0] = 0;
-            lowerDiagonal[cfg.N] = -1;
+            lowerDiagonal[0] = 0.0L;
+            lowerDiagonal[cfg.N] = -1.0L;
             for (int i = 1 ; i < cfg.N ; i++) {
-                lowerDiagonal[i] = 1;
+                lowerDiagonal[i] = 1.0L;
             }
 
             long double complex *middleDiagonal = malloc((cfg.N + 1) * sizeof(long double complex));
-            middleDiagonal[0] = 1;
-            middleDiagonal[cfg.N] = 1; 
+            middleDiagonal[0] = 1.0L;
+            middleDiagonal[cfg.N] = 1.0L; 
             const long double complex C = cFromC1(h, cfg.Tau);
             for (int i = 1 ; i < cfg.N ; i++) {
                 middleDiagonal[i] = -C;
             }
 
             long double complex *upperDiagonal = malloc((cfg.N + 1) * sizeof(long double complex));
-            upperDiagonal[0] = -1;
-            upperDiagonal[cfg.N] = 0;
+            upperDiagonal[0] = -1.0L;
+            upperDiagonal[cfg.N] = 0.0L;
             for (int i = 1 ; i < cfg.N ; i++) {
-                upperDiagonal[i] = 1;
+                upperDiagonal[i] = 1.0L;
             }
 
             // Executing TDMA
@@ -165,13 +164,14 @@ void solve(
                 }
             }
 
-            if (maxSubtraction < cfg.delta) {
+            if (maxSubtraction <= cfg.delta) {
                 lowerThanDelta = true;
             }
 
             // The uNext new becomes old
             memcpy(uNextOld, uNextNew, (cfg.N + 1) * sizeof(long double complex));
 
+            // Freeing
             free(lowerDiagonal);
             free(middleDiagonal);
             free(upperDiagonal);
@@ -192,4 +192,8 @@ void solve(
         // Current 'f' becomes previous
         memcpy(fPrevious, fNext, (cfg.N + 1) * sizeof(long double complex));
     }
+
+    free(uPrevious);
+    free(uNextNew);
+    free(uNextOld);
 }

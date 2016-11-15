@@ -27,9 +27,9 @@ long double incorrectness2(
         const long double Tau) {
 
     // Some random values
-    const long double x = 0.2;
-    const long double t = 1.85;
-    const long double alpha = 2.2;
+    const long double x = 0.55;
+    const long double t = 0.34;
+    const long double alpha = 0.22;
 
     // Calculate as many F values as we need
     const int j = x / h;
@@ -83,7 +83,7 @@ void assertTest1() {
 void assertTest2() {
 
     const long double h = 0.05;
-    const long double Tau = 0.0005;
+    const long double Tau = 0.01;
 
     const long double firstIncorrectness = incorrectness2(h, Tau);
     const long double secondIncorrectness = incorrectness2(h / 10.0, Tau / 10.0);
@@ -171,19 +171,8 @@ void assertTest3() {
     assert(maxSubtraction < machinePrecision);
 }
 
-// Comparing u values to values calculated after Thomas algorithm
-void assertTest4() {
-
-    // Maximum allowed difference
-    const long double maxAllowedDifference = 0.0001;
-
-    // Mock configuration 1
-    struct configuration cfg;
-    cfg.N = 1000;
-    cfg.Tau = 0.05;
-    cfg.T = 0.8;
-    cfg.alpha = 0.23;
-    cfg.delta = 1e-10;
+long double maxDifference(
+        struct configuration cfg) {
 
     const long double h = 1.0 / (long double) cfg.N;
 
@@ -198,21 +187,47 @@ void assertTest4() {
     solve(finalResultsMatrix, cfg);
 
     // Initializing subtractions arrays
-    long double maxSubtraction = 0.0;
+    long double maxDifference = 0.0L;
 
     // Getting max delta
     for (int i = 0 ; i <= amountOfIterations ; i++) {
         for (int j = 0 ; j <= cfg.N ; j++) {
             const long double subtraction = cabsl(finalResultsMatrix[i][j] - uAccurate(j * h, i * cfg.Tau));
 
-            if (subtraction > maxSubtraction) {
-                maxSubtraction = subtraction;
+            if (subtraction > maxDifference) {
+                maxDifference = subtraction;
             }
         }
     }
 
-    // Comparison
-    printf("\nTest4: maxSubtraction = %.25Lf", maxSubtraction);
     free(finalResultsMatrix);
-    assert(maxSubtraction <= maxAllowedDifference);
+
+    return maxDifference;
+} 
+
+// Comparing u values to values calculated after Thomas algorithm
+void assertTest4() {
+
+    // Mock configuration 1
+    struct configuration cfg1;
+    cfg1.N = 1000;
+    cfg1.Tau = 0.05;
+    cfg1.T = 0.8;
+    cfg1.alpha = 0.23;
+    cfg1.delta = 1e-12;
+
+    // Mock configuration 2
+    struct configuration cfg2;
+    cfg2.N = cfg1.N * 10.0L;
+    cfg2.Tau = cfg1.Tau / 10.0L;
+    cfg2.T = 0.8;
+    cfg2.alpha = 0.23;
+    cfg2.delta = 1e-12;
+
+    // Evaluating proportion
+    const long double proportion = maxDifference(cfg1) / maxDifference(cfg2);
+
+    printf("\nTest4: proportion = %.25Lf", proportion);
+    
+    assert(ceil(proportion) == 10);
 }
