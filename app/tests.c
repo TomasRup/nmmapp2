@@ -184,24 +184,9 @@ long double maxDifference(
 	}
 
     // Getting  solutions
-    solve(finalResultsMatrix, cfg);
-
-    // Initializing subtractions arrays
-    long double maxDifference = 0.0L;
-
-    // Getting max delta
-    for (int i = 0 ; i <= amountOfIterations ; i++) {
-        for (int j = 0 ; j <= cfg.N ; j++) {
-            const long double subtraction = cabsl(finalResultsMatrix[i][j] - uAccurate(j * h, i * cfg.Tau));
-
-            if (subtraction > maxDifference) {
-                maxDifference = subtraction;
-            }
-        }
-    }
-
+    const long double maxDifference = solveAndGetMaxDifference(finalResultsMatrix, cfg);
     free(finalResultsMatrix);
-
+    
     return maxDifference;
 } 
 
@@ -225,9 +210,11 @@ void assertTest4() {
     cfg2.delta = cfg1.delta;
 
     // Evaluating proportion
-    const long double proportion = maxDifference(cfg1) / maxDifference(cfg2);
+    const long double difference1 = maxDifference(cfg1);
+    const long double difference2 = maxDifference(cfg2);
+    const long double proportion = difference1 / difference2;
 
-    printf("\nTest4: proportion = %.25Lf", proportion);
+    printf("\nTest4: proportion = %.5Lf / %.5Lf = %.5Lf", difference1, difference2, proportion);
     
     assert(ceil(proportion) == 10);
 }

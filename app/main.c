@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Actually solving equation
-	solve(finalResultsMatrix, cfg);
+	const long double maxDifference = solveAndGetMaxDifference(finalResultsMatrix, cfg);
 
 	// Printint out the result
 	for (int i = 0 ; i < amountOfIterations ; i++) {
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 	// Printing stats
 	struct timeval appExecutionEnded;
 	gettimeofday(&appExecutionEnded, NULL);
-	printStats(appExecutionStarted, appExecutionEnded, currentProcess, totalProcesses);
+	printStats(appExecutionStarted, appExecutionEnded, currentProcess, totalProcesses, maxDifference);
 
 	// Success
 	return 0;

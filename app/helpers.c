@@ -5,12 +5,18 @@ void printStats(
         const struct timeval appExecutionStarted, 
         const struct timeval appExecutionEnded, 
         const int currentProcess, 
-        const int totalProcesses) {
+        const int totalProcesses,
+        const long double maxDifference) {
 
-    const long difference = (appExecutionEnded.tv_sec - appExecutionStarted.tv_sec) * 1000.0f 
+    const long timeDifference = (appExecutionEnded.tv_sec - appExecutionStarted.tv_sec) * 1000.0f 
         + (appExecutionEnded.tv_usec - appExecutionStarted.tv_usec) / 1000.0f;
 
-    printf("\nProcess %d/%d has completed in %ldms\n", currentProcess + 1, totalProcesses, difference);
+    printf(
+        "\nProcess %d/%d has completed in %ldms. The maximum difference was: %.20Lf\n", 
+        currentProcess + 1, 
+        totalProcesses, 
+        timeDifference, 
+        maxDifference);
 }
 
 // Returns maximum complex number

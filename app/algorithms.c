@@ -76,10 +76,13 @@ void thomasAlgorithm(
 
 // Solving using Thomas Algorithm (Tridiagonal Matrix Algorithm). 
 // The supported form is x(j-1) - C * x(j) + x(j+1) = -F
-void solve(
+long double solveAndGetMaxDifference(
         long double complex **finalResultsMatrix, 
         struct configuration cfg) { 
     
+    // Initial max difference
+    long double maxDifference = 0.0L;
+
     // Initializing constants
     const long double h = 1.0L / (long double) cfg.N;    
 
@@ -180,6 +183,15 @@ void solve(
         // Adding result
         memcpy(finalResultsMatrix[timeIteration], uNextNew, (cfg.N + 1) * sizeof(long double complex));
 
+        // Checking max difference
+        for (int z = 0 ; z <= cfg.N ; z++) {
+            const long double subtraction = cabsl(uNextNew[z] - uAccurate(z * h, t));
+
+            if (subtraction > maxDifference) {
+                maxDifference = subtraction;
+            }
+        }
+
         // Swapping previous u values with next new values
         long double complex *tempList = malloc((cfg.N + 1) * sizeof(long double complex));
         
@@ -196,4 +208,6 @@ void solve(
     free(uPrevious);
     free(uNextNew);
     free(uNextOld);
+
+    return maxDifference;
 }
